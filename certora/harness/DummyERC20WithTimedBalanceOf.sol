@@ -6,7 +6,7 @@ contract DummyERC20WithTimedBalanceOf {
   function _balanceOfWithBlockTimestamp(
     address user,
     uint256 blockTs
-  ) internal view returns (uint256) {
-    return 0; // STUB! Should be summarized
+  ) internal view returns (uint256 r) {
+    assert(false); // STUB! Should be summarized
   }
 }
