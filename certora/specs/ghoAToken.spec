@@ -1,6 +1,7 @@
 import "erc20.spec";
 
-using GhoTokenHarness as _ghoTokenHarness;
+using GhoToken as GHOTOKEN;
+using GhoTokenHelper as GhoTokenHelper;
 
 methods{
 
@@ -15,10 +16,20 @@ methods{
 	function getVariableDebtToken() external returns (address) envfree;
 	function updateGhoTreasury(address) external ;
 	function getGhoTreasury() external returns (address) envfree;
-	function _ghoTokenHarness.getFacilitatorBucketCapacity(address) external returns (uint256) envfree;
-	function _ghoTokenHarness.getFacilitatorBucketLevel(address) external returns (uint256) envfree;
-	function _ghoTokenHarness.balanceOf(address) external returns (uint256) envfree;
 	function scaledBalanceOf(address) external returns (uint256) envfree;
+	/*******************
+    *   GhoToken.sol   *
+    ********************/
+	function GhoTokenHelper.getFacilitatorBucketCapacity(address) external returns (uint256) envfree;
+	function GhoTokenHelper.getFacilitatorBucketLevel(address) external returns (uint256) envfree;
+	function GHOTOKEN.balanceOf(address) external returns (uint256) envfree;
+
+	/************************************
+    *   GhoTokenVariableDebtToken.sol   *
+    *************************************/
+	function _.getBalanceFromInterest(address user) external  => DISPATCHER(true);
+	function _.decreaseBalanceFromInterest(address user, uint256 amount) external => DISPATCHER(true);
+
 
   	/*******************
     *     Pool.sol     *
@@ -37,6 +48,7 @@ methods{
 	function _.isPoolAdmin(address) external => CONSTANT;
 
 
+
 }
 
 /**
@@ -45,8 +57,8 @@ methods{
 rule noMint() {
 	env e;
 	calldataarg args;
-	mint(e, args);
-	assert(false);
+	mint@withrevert(e, args);
+	assert lastReverted;
 }
 
 /**
@@ -55,8 +67,8 @@ rule noMint() {
 rule noBurn() {
 	env e;
 	calldataarg args;
-	burn(e, args);
-	assert(false);
+	burn@withrevert(e, args);
+	assert lastReverted;
 }
 
 /**
@@ -65,9 +77,10 @@ rule noBurn() {
 rule noTransfer() {
 	env e;
 	calldataarg args;
-	transfer(e, args);
-	assert(false);
+	transfer@withrevert(e, args);
+	assert lastReverted;
 }
+
 
 /** 
 * @title Proves that calling ghoAToken::transferUnderlyingTo will revert if the amount exceeds the excess capacity  
@@ -77,8 +90,8 @@ rule transferUnderlyingToCantExceedCapacity() {
 	address target;
 	uint256 amount;
 	env e;
-	mathint facilitatorLevel = _ghoTokenHarness.getFacilitatorBucketLevel(currentContract);
-	mathint facilitatorCapacity = _ghoTokenHarness.getFacilitatorBucketCapacity(currentContract);
+	mathint facilitatorLevel = GhoTokenHelper.getFacilitatorBucketLevel(currentContract);
+	mathint facilitatorCapacity = GhoTokenHelper.getFacilitatorBucketCapacity(currentContract);
 	transferUnderlyingTo@withrevert(e, target, amount);
 	assert(to_mathint(amount) > (facilitatorCapacity - facilitatorLevel) => lastReverted);
 }
@@ -87,9 +100,9 @@ rule transferUnderlyingToCantExceedCapacity() {
 /**
 * @title Proves that the total supply of GhoAToken is always zero
 **/
-rule totalSupplyAlwaysZero() {
-	assert(totalSupply() == 0);
-}
+invariant totalSupplyAlwaysZero() 
+	totalSupply() == 0;
+
 
 /**
 * @title Proves that any user's balance of GhoAToken is always zero
@@ -99,38 +112,12 @@ invariant userBalanceAlwaysZero(address user)
 
 
 
-// /**
-// * @title first handleRepayment(amount) after transferUnderlyingTo(amount) succeeds.
-// * @dev assumption of sufficient balanceOf(msg.sender) is justified because BorrowLogic.executeRepay()
-// * @dev executes: IERC20(params.asset).safeTransferFrom(msg.sender, reserveCache.aTokenAddress, paybackAmount);
-// * @dev before invocation of handleRepayment()
-// * OBSOLETE - GhoToken has other rules to validate the behavior of the facilitator level maintenance
-// */
-// rule handleRepayment_after_transferUnderlyingTo()
-// {
-// 	env e;
-// 	calldataarg arg;
-// 	uint256 amount;
-// 	address target;
-// 	address user;
-//     address onBehalfOf;
-
-// 	transferUnderlyingTo(e, target, amount);
-
-// 	require _ghoTokenHarness.balanceOf(e.msg.sender) >= amount; //underlying asset
-// 	require e.msg.sender == currentContract;
-
-// 	handleRepayment@withrevert(e, user, onBehalfOf, amount);
-// 	assert !lastReverted, "handleRepayment failed";
-
-// }
-
 
 /**
 * @title BucketLevel decreases after transferUnderlyingTo() followed by handleRepayment()
 * @dev repayment funds are, partially or fully, transferred to the treasury
 */
-rule level_does_not_decrease_after_transferUnderlyingTo_followed_by_handleRepayment()
+rule integrityTransferUnderlyingToWithHandleRepayment()
 {
 	env e;
 	calldataarg arg;
@@ -139,10 +126,10 @@ rule level_does_not_decrease_after_transferUnderlyingTo_followed_by_handleRepaym
 	address user;
     address onBehalfOf;
 
-	uint256 levelBefore = _ghoTokenHarness.getFacilitatorBucketLevel(currentContract);
+	uint256 levelBefore = GhoTokenHelper.getFacilitatorBucketLevel(currentContract);
 	transferUnderlyingTo(e, target, amount);
 	handleRepayment(e, user, onBehalfOf, amount);
-	uint256 levelAfter = _ghoTokenHarness.getFacilitatorBucketLevel(currentContract);
+	uint256 levelAfter = GhoTokenHelper.getFacilitatorBucketLevel(currentContract);
 	assert levelBefore <= levelAfter;
 
 }
