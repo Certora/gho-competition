@@ -128,16 +128,10 @@ invariant total_supply_eq_sumAllLevel()
 // INV #4
 /**
  * @title Sum of balances is GhoToke::totalSupply()
- * @dev EITHER requireInvariant sumAllLevel_eq_sumAllBalance() OR requireInvariant total_supply_eq_sumAllLevel() suffices.
  **/
-//todo: replace preserve
 invariant sumAllBalance_eq_totalSupply()
-	sumAllBalance == to_mathint(totalSupply())
-	{
-		preserved {
-			requireInvariant sumAllLevel_eq_sumAllBalance();
-		}
-	}
+	sumAllBalance == to_mathint(totalSupply());
+	
 
 // INV #5
 /**
@@ -286,9 +280,7 @@ rule burn_after_mint(method f) filtered {f -> !f.isView}
 	address account;
 
 	requireInvariant inv_balanceOf_leq_totalSupply(e.msg.sender);
-	require e.msg.value == 0; 
-	require amount > 0;
-
+	
 	mint(e, account, amount);
 	transferFrom(e, account, e.msg.sender, amount);
 	burn@withrevert(e, amount);
@@ -450,7 +442,6 @@ rule balance_after_burn() {
 **/
 rule mintLimitedByFacilitatorRemainingCapacity() {
 	env e;
-	require(GhoTokenHelper.getFacilitatorBucketCapacity(e.msg.sender) > GhoTokenHelper.getFacilitatorBucketLevel(e.msg.sender));
 
 	uint256 amount;
 	require(to_mathint(amount) > (GhoTokenHelper.getFacilitatorBucketCapacity(e.msg.sender) - GhoTokenHelper.getFacilitatorBucketLevel(e.msg.sender)));

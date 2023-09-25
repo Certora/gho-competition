@@ -4,29 +4,47 @@ using MockFlashBorrower as flashBorrower;
 
 methods{
     function _.isPoolAdmin(address user) external => retreivePoolAdminFromGhost(user) expect bool ALL;
-    function _.isFlashBorrower(address user) external => retreiveFlashBorrowerFromGhost(user) expect bool ALL;
     function _.onFlashLoan(address, address, uint256, uint256, bytes) external => DISPATCHER(true);
     function _.getACLManager() external => NONDET;
 
-    // FlashBorrower
+    /********************************;
+	*   IERC3156FlashBorrower.sol	*;
+	*********************************/  
+    function _.isFlashBorrower(address user) external => retreiveFlashBorrowerFromGhost(user) expect bool ALL;
+    // Mock specific implementation
     function flashBorrower.action() external returns (MockFlashBorrower.Action) envfree;
     function flashBorrower._transferTo() external returns (address) envfree;
-    function gho.allowance(address, address) external returns (uint256) envfree;
+    
+    /*********************;
+	*	    Tokens       *;
+	**********************/  
     function _.burn(uint256)  external=> DISPATCHER(true);
     function _.mint(address, uint256)  external=> DISPATCHER(true);
     function _.transfer(address, uint256) external => DISPATCHER(true);
     function _.balanceOf(address) external => DISPATCHER(true);
     
-    function _.decreaseBalanceFromInterest(address, uint256) external => NONDET;
-    function _.getBalanceFromInterest(address) external => NONDET;
+    /********************************;
+	*	    GhoToken.sol	        *;
+	*********************************/  
+    function gho.allowance(address, address) external returns (uint256) envfree;
     function gho.totalSupply() external returns (uint256) envfree;
     function gho.balanceOf(address) external returns (uint256) envfree;
 
+    /********************************;
+	*	    GhoAToken.sol	        *;
+	*********************************/
     function atoken.getGhoTreasury() external returns (address) envfree;
+
+    /********************************;
+	*	    IGhoVariableDebtToken	*;
+	*********************************/  
+    function _.decreaseBalanceFromInterest(address, uint256) external => NONDET;
+    function _.getBalanceFromInterest(address) external => NONDET;
 }
 
 // keeps track of users with pool admin permissions in order to return a consistent value per user
 ghost mapping(address => bool) poolAdmin_ghost;
+
 // keeps track of users with flash borrower permissions in order to return a consistent value per user
 ghost mapping(address => bool) flashBorrower_ghost;
 

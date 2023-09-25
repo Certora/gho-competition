@@ -1,7 +1,4 @@
 methods {
-	// summarization for elimination the raymul operation in balance of and totalSupply.
-	//getReserveNormalizedVariableDebt(address asset) returns (uint256) => indexAtTimestamp(e.block.timestamp)
-	//setAdditionalData(address user, uint128 data) envfree
     function _.handleAction(address, uint256, uint256) external => NONDET;
 	function scaledBalanceOfToBalanceOf(uint256) external returns (uint256) envfree;
     //balanceOf(address) returns (uint256) envfree
@@ -158,10 +155,10 @@ rule integrityOfBurn(address u, uint256 amount) {
 	uint256 totalSupplyAfter = totalSupply();
 
     assert bounded_error_eq(totalSupplyAfter, totalSupplyBefore - amount, 1, index), "total supply integrity"; // total supply reduced
-    assert bounded_error_eq(balanceAfterUser, balanceBeforeUser - amount, 1, index), "integrity break";  // user burns ATokens to recieve underlying
+    assert bounded_error_eq(balanceAfterUser, balanceBeforeUser - amount, 1, index), "integrity break";  // user burns ATokens to receive underlying
 }
 
-rule integrityOfBurn_exact_suply_should_fail(address u, uint256 amount) {
+rule integrityOfBurn_exact_supply_should_fail(address u, uint256 amount) {
 	env e;
 	uint256 index = indexAtTimestamp(e.block.timestamp);
 	uint256 balanceBeforeUser = balanceOf(e, u);
