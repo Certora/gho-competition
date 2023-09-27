@@ -56,12 +56,12 @@ We will introduce several bugs in the smart contract, some of which are publicly
 
 # Scope
 
-| Contract                                                                                                                                                                      | SLOC |     |     |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | --- | --- |
-| [src/contracts/gho/GhoToken.sol](https://github.com/Certora/gho-competition/src/contracts/gho/GhoToken.sol)                                                                   | 75   |
-| [src/contracts/facilitators/flashMinter/GhoFlashMinter.sol](https://github.com/Certora/gho-competition/src/contracts/facilitators/flashMinter/GhoFlashMinter.sol)             | 152  |
-| [src/contracts/facilitators/aave/tokens/GhoAToken.sol](https://github.com/Certora/gho-competition/src/contracts/facilitators/aave/tokens/GhoAToken.sol)                       | 133  |
-| [src/contracts/facilitators/aave/tokens/GhoVariableDebtToken.sol](https://github.com/Certora/gho-competition/src/contracts/facilitators/aave/tokens/GhoVariableDebtToken.sol) | 306  |
+| Contract                                                                                                                                                                                               | SLOC |     |     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- | --- | --- |
+| [src/contracts/gho/GhoToken.sol](https://github.com/Certora/gho-competition/tree/certora/competition/src/contracts/gho/GhoToken.sol)                                                                   | 75   |
+| [src/contracts/facilitators/flashMinter/GhoFlashMinter.sol](https://github.com/Certora/gho-competition/tree/certora/competition/src/contracts/facilitators/flashMinter/GhoFlashMinter.sol)             | 152  |
+| [src/contracts/facilitators/aave/tokens/GhoAToken.sol](https://github.com/Certora/gho-competition/tree/certora/competition/src/contracts/facilitators/aave/tokens/GhoAToken.sol)                       | 133  |
+| [src/contracts/facilitators/aave/tokens/GhoVariableDebtToken.sol](https://github.com/Certora/gho-competition/tree/certora/competition/src/contracts/facilitators/aave/tokens/GhoVariableDebtToken.sol) | 306  |
 
 # Additional Context
 
