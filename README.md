@@ -168,7 +168,7 @@ For discrete injected bugs and real bugs the total number of points a bug is wor
 
 ## Overview
 
-- Create a private fork of the [public repository](https://github.com/Certora/gho-competition) and give access to judges.
+- Create a private fork of the [public repository](https://github.com/Certora/gho-competition) and give access to judges: teryanarmen, mailalexjoseph, nd-certora.
 - Implement properties in the `certora/competition` branch.
 - Set up all your conf files in the `certora/confs` directory to check the specification against the code.
 - Stop working once the deadline is reached. We will review your work and announce results.
