@@ -1,10 +1,3 @@
-
-/**
-@notice set_facilitatorList contains 
-ghost, hooks and invariant of the valid state of _facilitatorsList base on enumberableSet spec https://github.com/Certora/Examples/tree/master/CVLByExample/QuantifierExamples
-**/
-import "set_facilitatorList.spec";
-
 using GhoTokenHelper as GhoTokenHelper;
 
 methods{
@@ -148,10 +141,11 @@ definition inFacilitatorsList(bytes32 value) returns bool = (ghostIndexes[value]
 //
 
 /**
-* @title The indexes and values always match.
-* 		values[indexes[v] - 1] = v for all values v in the set
-* 		and indexes[values[i]] = i+1 for all valid indexes i.
-*/
+* @title AddressSet internal coherency
+* @dev A facilitator address exists in AddressSet list (GhoToken._facilitatorsList._values)
+* @dev if and only if it exists in AddressSet mapping (GhoToken._facilitatorsList._indexes)
+* @notice set_facilitatorList contains ghosts, hooks and invariant of the valid state of _facilitatorsList base on enumberableSet spec https://github.com/Certora/Examples/tree/master/CVLByExample/QuantifierExamples
+**/
 invariant facilitatorsList_setInvariant()
     (forall uint256 index. 0 <= index && index < ghostLength => to_mathint(ghostIndexes[ghostValues[index]]) == index + 1)
     && (forall bytes32 value. ghostIndexes[value] == 0 || 
@@ -224,15 +218,6 @@ invariant inv_valid_level(address facilitator)
 			requireInvariant inv_valid_capacity(facilitator);
 		}
 	}
-
-// INV #8
-/**
-* @title AddressSet internal coherency
-* @dev A facilitator address exists in AddressSet list (GhoToken._facilitatorsList._values)
-* @dev if and only if it exists in AddressSet mapping (GhoToken._facilitatorsList._indexes)
-*/
-
-use invariant facilitatorsList_setInvariant;
 
 // INV #9
 /**
