@@ -28,11 +28,15 @@ Here are a few suggestions on how to achieve this goal:
 3. Use the coverage information and notice lines that are not green, they are most likely not covered, or covered partially.
 
 [GhoToken Coverage](https://prover.certora.com/output/40726/baacf10dede64645a2981b1348bc90f6/UnsatCoreVisualisation.html?anonymousKey=5ec8f9019d987b9626cf4ff68894c49a2d240856#commands-line-378-source-file-2)
+
 [GhoAToken Coverage](http://UnsatCoreVisualisation.html)
+
 [GhoFlashMinter Coverage](https://prover.certora.com/output/40726/9be9a6d7eb674e378d3e83828080ec98/UnsatCoreVisualisation.html?anonymousKey=2a11c47d666073b31d5c9d143bb4d750ec4412ca#commands-line-19-source-file-9)
 
 [GhoToken MutationTesting](https://mutation-testing.certora.com/?id=e88e640b-cb0c-4ea9-85ca-a5c6db926bee&anonymousKey=4bb274d5-442c-4fd3-ac46-441532a2f9f2)
+
 [GhoAToken Mutation Testing](https://mutation-testing.certora.com/?id=d5424368-c6d7-43a9-86d1-3eed44511f0e&anonymousKey=e9625adc-8bd8-4f63-a87c-1cab560a6f42)
+
 [GhoFlashMinter Mutation Testing](https://mutation-testing.certora.com/?id=7c1820e9-76ed-49f0-83e8-8951b2d13e92&anonymousKey=c5fdf672-8388-41b9-9f59-ad1e5ceca2fa)
 
 ---
@@ -43,7 +47,7 @@ An overview of the rewards distributor and it's place in the Aave ecosystem can 
 
 1. [GhoToken docs](https://docs.aave.com/faq/gho-stablecoin).
 2. [GhoToken developer docs](https://docs.gho.xyz/developer-docs/overview).
-3. [Readme of the repository](./info.md)
+3. [Readme of the repository](https://github.com/aave/gho-core#readme)
 
 This challenge is about using the Certora prover to formally verify properties in the Solidity smart contract `contracts/rewards/RewardsController.sol`.
 
