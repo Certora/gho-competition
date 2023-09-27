@@ -275,7 +275,7 @@ Instructions regarding the ideal way to "pitch" your bug report can be found bel
 
 ## Testing
 
-In the certora/conf directory, you will find conf file(s) that contains examples that can be used to run of your submitted spec files. You may need to configure these differently as you progress through the project. Many of the options available are documented [here](https://docs.certora.com/en/latest/docs/prover/cli/options.html?highlight=script). It is recommended to test your spec against the publicly available injected bugs, as well as bugs you injected yourself, to ensure your rules are working properly. You can do so by using the `verifyAllInjected.sh` script. This script will inject either the bugs injected by you or by certora one by one and run your spec against them.
+In the certora/conf directory, you will find conf file(s) that contains examples that can be used to run of your submitted spec files. You may need to configure these differently as you progress through the project. Many of the options available are documented [here](https://docs.certora.com/en/latest/docs/prover/cli/options.html?highlight=script). It is recommended to test your spec against the publicly available injected bugs, as well as bugs you injected yourself, to ensure your rules are working properly. You can do so by replacing the contracts in `src` with the ones in `certora/mutations/`.
 
 - Note that you need to pass an arg to the script, stating which of the 2 directories under `test` you want to run you specs against.
 
