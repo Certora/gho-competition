@@ -70,7 +70,9 @@ contract GhoToken is ERC20, AccessControl, IGhoToken {
     require(bytes(facilitatorLabel).length > 0, 'INVALID_LABEL');
 
     facilitator.label = facilitatorLabel;
-    facilitator.bucketCapacity = bucketCapacity;
+    //facilitator.bucketCapacity = bucketCapacity;
+    /// AssignmentMutation(`bucketCapacity` |==> `0`) of: `facilitator.bucketCapacity = bucketCapacity;`
+    facilitator.bucketCapacity = 0;
 
     _facilitatorsList.add(facilitatorAddress);
 

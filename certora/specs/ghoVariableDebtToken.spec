@@ -1,7 +1,4 @@
-//import "erc20.spec"
 import "VariableDebtToken.spec";
-
-
 
 using GhoDiscountRateStrategy as discStrategy;
 using DummyERC20WithTimedBalanceOf as discountToken;

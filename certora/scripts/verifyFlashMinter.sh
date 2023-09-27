@@ -1,2 +1,0 @@
-
-certoraRun certora/confs/ghoTokenFaciltator.conf

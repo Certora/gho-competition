@@ -1,9 +1,17 @@
-import "erc20.spec";
-
 using GhoToken as GHOTOKEN;
 using GhoTokenHelper as GhoTokenHelper;
 
 methods{
+	// erc20 methods
+    function _.name() external                                 => DISPATCHER(true);
+    function _.symbol() external                              => DISPATCHER(true);
+    function _.decimals() external                            => DISPATCHER(true);
+    function _.totalSupply() external                         => DISPATCHER(true);
+    function _.balanceOf(address) external                    => DISPATCHER(true);
+    function _.allowance(address,address) external            => DISPATCHER(true);
+    function _.approve(address,uint256) external              => DISPATCHER(true);
+    function _.transfer(address,uint256) external             => DISPATCHER(true);
+    function _.transferFrom(address,address,uint256) external => DISPATCHER(true);
 
 	function totalSupply() external returns (uint256) envfree;
 	function RESERVE_TREASURY_ADDRESS() external returns (address) envfree;
