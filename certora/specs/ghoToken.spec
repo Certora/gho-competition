@@ -147,7 +147,7 @@ definition inFacilitatorsList(bytes32 value) returns bool = (ghostIndexes[value]
 * @notice set_facilitatorList contains ghosts, hooks and invariant of the valid state of _facilitatorsList base on enumberableSet spec https://github.com/Certora/Examples/tree/master/CVLByExample/QuantifierExamples
 **/
 invariant facilitatorsList_setInvariant()
-    (forall uint256 index. 0 <= index && index < ghostLength => to_mathint(ghostIndexes[ghostValues[index]]) == index + 1)
+    (forall uint256 index. index < ghostLength => to_mathint(ghostIndexes[ghostValues[index]]) == index + 1)
     && (forall bytes32 value. ghostIndexes[value] == 0 || 
          (ghostValues[ghostIndexes[value] - 1] == value && ghostIndexes[value] >= 1 && ghostIndexes[value] <= ghostLength));
 
