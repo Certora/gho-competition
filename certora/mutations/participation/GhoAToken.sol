@@ -167,7 +167,8 @@ contract GhoAToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base
     if (amount <= balanceFromInterest) {
       _ghoVariableDebtToken.decreaseBalanceFromInterest(onBehalfOf, amount);
     } else {
-      _ghoVariableDebtToken.decreaseBalanceFromInterest(onBehalfOf, balanceFromInterest);
+      //_ghoVariableDebtToken.decreaseBalanceFromInterest(onBehalfOf, balanceFromInterest);
+      /// DeleteExpressionMutation(`_ghoVariableDebtToken.decreaseBalanceFromInterest(onBehalfOf, balanceFromInterest)` |==> ``) of: `_ghoVariableDebtToken.decreaseBalanceFromInterest(onBehalfOf, balanceFromInterest);`
       IGhoToken(_underlyingAsset).burn(amount - balanceFromInterest);
     }
   }
