@@ -238,14 +238,9 @@ git remote -v
 
    This last action should pull the code from the `certora-repo` remote and embed it into the branch you checked out to. You potentially need to sort out conflicts, but in general you code is now synced and ready to push to your private remote whenever you need to.
 
-You’ll need to sync 2 branches on your fork:
-
-- `certora-contest` - your working branch.
-- `main` - a reference branch that should not be touched unless instructed otherwise.
-
 Make sure to grant read access to the judges `mailalexjoseph`, `teryanarmen`, `nd-certora` on GitHub.
 
-The forked repository will contain a `certora-contest` directory that consists of 4 sub-directories - `harnesses`, `conf`, `tests` and `specs`. These should contain the entire preliminary setup to allow you to start writing rules. Each sub-directory contains a different component of the verification project and may contain additional sub-directories to maintain organization. Try to keep a similar structure when adding new files.
+The forked repository will contain a `certora` directory that consists of 4 sub-directories - `harness`, `confs`, `mutations` and `specs`. These should contain the entire preliminary setup to allow you to start writing rules. Each sub-directory contains a different component of the verification project and may contain additional sub-directories to maintain organization. Try to keep a similar structure when adding new files.
 
 ### Setting Up The Project
 
@@ -259,7 +254,7 @@ In the certora/spec directory, you will find `.spec` files named `<name_of_contr
 
 - Document each rule/invariant with a comment above that describes what the rule does in simple English. Any rule/invariant that isn’t documented will not be counted.
 
-- It is recommended to inject a bug for each rule you write. This will ensure the rule is doing what you think it should be doing. To get more info on how to save injected bugs easily and undo changes, read the `README` in `certora/tests` and run `make help` from the certora directory.
+- It is recommended to inject a bug for each rule you write. This will ensure the rule is doing what you think it should be doing.
 
 **Do not leave failing rules or rules that are unreachable in the specs.**
 
