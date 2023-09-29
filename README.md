@@ -43,14 +43,14 @@ Here are a few suggestions on how to achieve this goal:
 
 # Overview
 
-An overview of the rewards distributor and it's place in the Aave ecosystem can be found in:
+An overview of the GhoToken and it's place in the Aave ecosystem can be found in:
 
 1. [GhoToken docs](https://docs.aave.com/faq/gho-stablecoin).
 2. [GhoToken developer docs](https://docs.gho.xyz/developer-docs/overview).
 3. [Readme of the repository](https://github.com/aave/gho-core#readme)
 4. [Mutation testing docs](https://docs.certora.com/en/latest/docs/gambit/mutation-verifier.html)
 
-This challenge is about using the Certora prover to formally verify properties in the Solidity smart contract `contracts/rewards/RewardsController.sol`.
+This challenge is about using the Certora prover to formally verify properties in the Solidity smart contracts in scope.
 
 We will introduce several bugs in the smart contract, some of which are publicly available as patch files in `certora/tests/certora/`. The rest of the bugs will be made public at the end of the contest and will be used to evaluate the properties proven. You can find more information on the incentive structure and participation instructions further down in this doc.
 
