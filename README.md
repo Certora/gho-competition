@@ -248,7 +248,7 @@ In order to compile the contracts you'll need to install some packages using npm
 
 ## Participation
 
-In the certora/spec directory, you will find `.spec` files named `<name_of_contract>_verified.spec`. In these specs, gather all the rules and invariants that you were able to verify. Some functions, definitions, and properties have been setup up for you to serve as an example. Before submitting these specs, make sure to check the following things:
+In the certora/spec directory, you will find `.spec` files named `<name_of_contract>.spec`. In these specs, gather all the rules and invariants that you were able to verify. Some functions, definitions, and properties have been setup up for you to serve as an example. Before submitting these specs, make sure to check the following things:
 
 - Add the `--rule_sanity` flag to your conf files and check the entire spec to make sure that all rules are reachable at time of submission. Rules that are not reachable will not be counted towards participation as they will not catch any bugs.
 
