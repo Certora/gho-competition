@@ -52,7 +52,7 @@ An overview of the GhoToken and it's place in the Aave ecosystem can be found in
 
 This challenge is about using the Certora prover to formally verify properties in the Solidity smart contracts in scope.
 
-We will introduce several bugs in the smart contract, some of which are publicly available as patch files in `certora/tests/certora/`. The rest of the bugs will be made public at the end of the contest and will be used to evaluate the properties proven. You can find more information on the incentive structure and participation instructions further down in this doc.
+We will introduce several bugs in the smart contract, some of which are publicly available as patch files in `certora/mutations/participation/`. The rest of the bugs will be used to evaluate the properties proven and will be made public at the end of the contest evaluation. You can find more information on the incentive structure and participation instructions further down in this doc.
 
 # Scope
 
