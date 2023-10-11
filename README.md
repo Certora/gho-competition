@@ -29,7 +29,7 @@ Here are a few suggestions on how to achieve this goal:
 
 [GhoToken Coverage](https://prover.certora.com/output/40726/baacf10dede64645a2981b1348bc90f6/UnsatCoreVisualisation.html?anonymousKey=5ec8f9019d987b9626cf4ff68894c49a2d240856#commands-line-378-source-file-2)
 
-[GhoAToken Coverage](http://UnsatCoreVisualisation.html)
+[GhoAToken Coverage](https://prover.certora.com/output/11775/ff9422b5c4c845d4ac0f9cfe31db3323/UnsatCoreVisualisation.html?anonymousKey=b64ca5cbf808ce92fb583edb099a1dcab4fbc7de)
 
 [GhoFlashMinter Coverage](https://prover.certora.com/output/40726/9be9a6d7eb674e378d3e83828080ec98/UnsatCoreVisualisation.html?anonymousKey=2a11c47d666073b31d5c9d143bb4d750ec4412ca#commands-line-19-source-file-9)
 
