@@ -9,7 +9,7 @@
   - Most information for installing and using the Certora Prover are available [here](https://docs.certora.com/en/latest/)
   - Additional resources to get familiar with the Certora Prover will be emailed to registrants along with their Certora key.
 - Starts September 27, 2023 16:00 UTC
-- Ends October 11, 2023 20:00 UTC
+- Ends October 15, 2023 20:00 UTC
 
 ---
 
