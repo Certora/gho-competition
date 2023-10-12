@@ -39,6 +39,8 @@ Here are a few suggestions on how to achieve this goal:
 
 [GhoFlashMinter Mutation Testing](https://mutation-testing.certora.com/?id=7c1820e9-76ed-49f0-83e8-8951b2d13e92&anonymousKey=c5fdf672-8388-41b9-9f59-ad1e5ceca2fa)
 
+[GhoVariableDebtToken Mutation Testing](https://mutation-testing.certora.com/?id=196886b2-fc57-4cab-a7bd-3811619e76e1&anonymousKey=e5299592-d879-4fa7-87e8-080d8270c653)
+
 ---
 
 # Overview
