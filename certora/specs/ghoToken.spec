@@ -1,10 +1,19 @@
 using GhoTokenHelper as GhoTokenHelper;
 
-methods{
+methods {
 	function mint(address,uint256) external;
 	function burn(uint256) external;
 	function removeFacilitator(address) external;
 	function setFacilitatorBucketCapacity(address,uint128) external;
+	
+	function hasRole(bytes32, address) external returns bool envfree;
+
+	function FACILITATOR_MANAGER_ROLE() external returns bytes32 envfree;
+	function BUCKET_MANAGER_ROLE() external returns bytes32 envfree;
+
+	function getFacilitator(address) external returns IGhoToken.Facilitator envfree;
+	function getFacilitatorBucket(address) external returns (uint256, uint256) envfree;
+	function getFacilitatorsList() external returns address[] envfree;
 
 	function totalSupply() external returns uint256 envfree;
 	function balanceOf(address) external returns (uint256) envfree;
@@ -323,7 +332,6 @@ rule burn_after_mint(method f) filtered {f -> !f.isView}
 	transferFrom(e, account, e.msg.sender, amount);
 	burn@withrevert(e, amount);
 	assert !lastReverted, "burn failed";
-
 }
 
 /**
@@ -371,9 +379,8 @@ rule level_after_burn()
 
 }
 
-
 /**
-* @title Facilitator is valid after successful call to setFacilitatorBucketCapacity()
+* @title Facilitator is valid before and after successful call to setFacilitatorBucketCapacity()
 */
 rule facilitator_in_list_after_setFacilitatorBucketCapacity(){
 
@@ -383,9 +390,11 @@ rule facilitator_in_list_after_setFacilitatorBucketCapacity(){
 
 	assumeInvariants(facilitator);
 
+	bool inListBefore = inFacilitatorsList(toBytes32(facilitator));
+
 	setFacilitatorBucketCapacity(e, facilitator, newCapacity);
 	
-	assert inFacilitatorsList(toBytes32(facilitator));
+	assert inListBefore && inFacilitatorsList(toBytes32(facilitator));
 }
 
 /**
@@ -402,48 +411,25 @@ rule getFacilitatorBucketCapacity_after_setFacilitatorBucketCapacity(){
 }
 
 /**
-* @title Facilitator is valid after successful call to addFacilitator()
+* @title Facilitator is valid before and after successful call to mint() or burn()
 */
-rule facilitator_in_list_after_addFacilitator(){
-
-	env e;
-	address facilitator;
-	string label;
-	uint128 capacity;
-
-	assumeInvariants(facilitator);
-
-	addFacilitator(e, facilitator, label, capacity);
-
-	assert inFacilitatorsList(toBytes32(facilitator));
+rule facilitator_in_list_mint_and_burn(method f) filtered { f -> 
+	f.selector == sig:mint(address,uint256).selector || 
+		f.selector == sig:burn(uint256).selector
 }
-
-/**
-* @title Facilitator is valid after successful call to mint() or burn()
-*/
-rule facilitator_in_list_after_mint_and_burn(method f){
-
+{
 	env e;
 	calldataarg args;
 	requireInvariant inv_valid_capacity(e.msg.sender);
 	requireInvariant inv_valid_level(e.msg.sender);
 	assumeInvariants(e.msg.sender);
 
+	bool inListBefore = inFacilitatorsList(toBytes32(e.msg.sender));
+
 	f(e,args);
-	assert (((f.selector == sig:mint(address,uint256).selector) || (f.selector == sig:burn(uint256).selector)) => inFacilitatorsList(toBytes32(e.msg.sender)));
-}
 
-/**
-* @title Facilitator address is removed from list  (GhoToken._facilitatorsList._values) after calling removeFacilitator()
-**/
-rule address_not_in_list_after_removeFacilitator(address facilitator){
-	env e;
-	assumeInvariants(facilitator);
-	bool before =  inFacilitatorsList(toBytes32(facilitator));
-	removeFacilitator(e, facilitator);
-	assert before && !inFacilitatorsList(toBytes32(facilitator));
+	assert inListBefore && inFacilitatorsList(toBytes32(e.msg.sender));
 }
-
 
 rule balance_after_mint() {
 	
@@ -499,4 +485,234 @@ rule burnLimitedByFacilitatorLevel() {
 	require(amount > GhoTokenHelper.getFacilitatorBucketLevel(e.msg.sender));
 	burn@withrevert(e, amount);
 	assert lastReverted;
+}
+
+/**
+* @title Facilitator address is removed from the list (GhoToken._facilitatorsList._values) 
+		after a successful call to removeFacilitator(). Also, this facilitator must 
+		be in the list prior to the call and it is the only facilitator being removed.
+**/
+rule address_not_in_list_after_removeFacilitator(address facilitator) {
+	env e;
+	assumeInvariants(facilitator);
+    uint256 preFacilitatorsCount = ghostLength;
+	
+	bool inListBefore = inFacilitatorsList(toBytes32(facilitator));
+   
+	removeFacilitator(e, facilitator);
+	
+    assert inListBefore && !inFacilitatorsList(toBytes32(facilitator)) &&
+            assert_uint256(preFacilitatorsCount - 1) == ghostLength;
+}
+
+/**
+@title A facilitator can be removed successfully only if its bucket level is zero.
+*/
+rule can_only_removeFacilitator_with_empty_bucket(address facilitator) {
+    env e;
+	assumeInvariants(facilitator);
+
+	uint256 bucketLevelBefore = GhoTokenHelper.getFacilitatorBucketLevel(facilitator);
+	
+	removeFacilitator(e, facilitator);
+
+	assert bucketLevelBefore == 0;
+}
+
+/**
+	@title Proves that removeFacilitator enables removing facilitators with
+	any non-empty labels' lengths.
+*/
+rule removesFacilitator_succeeds_for_any_non_empty_label() {
+    env e;
+	address facilitator;
+
+	assumeInvariants(facilitator);
+
+	// assume facilitator is in list
+    require(inFacilitatorsList(toBytes32(facilitator)));
+
+	// assume facilitator's bucket level is zero
+	require(GhoTokenHelper.getFacilitatorBucketLevel(facilitator) == 0);
+
+	// assume e.msg.sender is a facilitator manager
+	require(hasRole(FACILITATOR_MANAGER_ROLE(), e.msg.sender));
+	
+	// exclude reverts due to non-payability
+	require(e.msg.value == 0);
+
+	uint256 labelLength = GhoTokenHelper.getFacilitatorsLableLen(facilitator);
+
+	removeFacilitator@withrevert(e, facilitator);
+    
+    assert !lastReverted <=> labelLength > 0;
+}
+
+definition facilitatorManagerRoleFunction(method f) returns bool = 
+    f.selector == sig:addFacilitator(address,string,uint128).selector ||
+        f.selector == sig:removeFacilitator(address).selector;
+
+definition bucketManagerRoleFunction(method f) returns bool = 
+    f.selector == sig:setFacilitatorBucketCapacity(address,uint128).selector;
+
+/**
+* @title Proves that all the functions except addFacilitator and removeFacilitator (resp. setFacilitatorBucketCapacity)
+         can succeed without reverting while msg.sender does not have a role of facilitator (resp. bucket) manager.
+*/
+rule canSucceedWithoutManagerRole(method f) filtered { 
+    f -> !facilitatorManagerRoleFunction(f) && !bucketManagerRoleFunction(f)
+ } 
+ {
+	env e;
+    calldataarg args;
+
+	bool hasFacilitatorManagerRoleBefore = hasRole(e, FACILITATOR_MANAGER_ROLE(), e.msg.sender);
+	bool hasBucketManagerRoleBefore = hasRole(BUCKET_MANAGER_ROLE(), e.msg.sender);
+
+    f@withrevert(e, args);
+
+    satisfy !lastReverted && 
+		!hasFacilitatorManagerRoleBefore && 
+			!hasBucketManagerRoleBefore;
+}
+
+/**
+* @title Facilitator is valid after a successful call to addFacilitator() and must not be
+* in the list prior to the successful call.
+*/
+rule facilitator_in_list_after_addFacilitator() {
+	env e;
+	address facilitator;
+	string facilitatorLabel;
+	uint128 bucketCapacity;
+
+	assumeInvariants(facilitator);
+    uint256 preFacilitatorsCount = ghostLength;
+
+	bool inListBefore = inFacilitatorsList(toBytes32(facilitator));
+   
+	addFacilitator(e, facilitator, facilitatorLabel, bucketCapacity);
+
+    uint256 postBucketCapacity = GhoTokenHelper.getFacilitatorBucketCapacity(facilitator);
+    uint256 postLabelLength = GhoTokenHelper.getFacilitatorsLableLen(facilitator);
+
+	assert !inListBefore && inFacilitatorsList(toBytes32(facilitator)) && 
+        facilitatorLabel.length == postLabelLength && 
+        assert_uint256(bucketCapacity) == postBucketCapacity && 
+        ghostLength == assert_uint256(preFacilitatorsCount + 1);
+}
+
+/**
+	@title Proves that addFacilitator reverts iff the given facilitator's label
+	is empty. Effectively proves that addFacilitator enables adding facilitators with
+	any non-empty labels' lengths.
+*/
+rule addFacilitator_enables_any_non_empty_label() {
+    env e;
+	address facilitator;
+	string facilitatorLabel;
+	uint128 bucketBapacity;
+
+	assumeInvariants(facilitator);
+
+	// assume facilitator is not in list
+    require(!inFacilitatorsList(toBytes32(facilitator)));
+
+	// assume e.msg.sender is a facilitator manager
+	require(hasRole(FACILITATOR_MANAGER_ROLE(), e.msg.sender));
+	
+	// exclude reverts due to non-payability
+	require(e.msg.value == 0);
+
+	addFacilitator@withrevert(e, facilitator, facilitatorLabel, bucketBapacity);
+    
+    assert lastReverted <=> facilitatorLabel.length == 0;
+}
+
+/**
+  @title When a Facilitator's bucket level becomes greater than its bucket capacity, that
+  facilitator can only decrease its bucket level.
+  @credit Czar102
+*/ 
+rule facilitator_level_can_only_decrease_when_gt_capacity(address facilitator, method f) filtered {
+    f -> !f.isView
+    }
+    {
+	env e;
+	calldataarg arg;
+	assumeInvariants(facilitator);
+	requireInvariant inv_valid_capacity(facilitator);
+	uint init_level = GhoTokenHelper.getFacilitatorBucketLevel(facilitator);
+    // Notice: strict inequality is a feasible post-state e.g. of setFacilitatorBucketCapacity
+	require init_level >= GhoTokenHelper.getFacilitatorBucketCapacity(facilitator);
+
+	f(e, arg);
+
+	assert GhoTokenHelper.getFacilitatorBucketLevel(facilitator) <= init_level;
+}
+
+/**
+@title Proves that functions that are expected to be called successfully only by the
+bucket/facilitator manager role can only be called by that role.
+*/
+rule managerOnlyFunction(method f) filtered {
+	f -> bucketManagerRoleFunction(f) || facilitatorManagerRoleFunction(f)
+}
+{
+	env e;
+	calldataarg args;
+
+	bool hasRoleBefore;
+	
+	if(bucketManagerRoleFunction(f)) {
+		hasRoleBefore = hasRole(BUCKET_MANAGER_ROLE(), e.msg.sender);
+	} else {
+		assert(facilitatorManagerRoleFunction(f));
+		hasRoleBefore = hasRole(FACILITATOR_MANAGER_ROLE(), e.msg.sender);
+	}
+
+	f(e, args);
+
+	assert hasRoleBefore, 
+		"Should have only been called successfully by a manager role";
+}
+
+/**
+	Proves that non-view functions do not change roles
+	with the exception of grantRole, renounceRole, and revokeRole.
+*/
+rule functionDoesNotChangeRoles(method f) filtered { 
+	f -> !f.isView && f.selector != sig:grantRole(bytes32,address).selector &&
+		f.selector != sig:renounceRole(bytes32,address).selector && 
+		f.selector != sig:revokeRole(bytes32,address).selector
+	} {
+	env e;
+	calldataarg args;
+	bytes32 role;
+	
+	bool hasRoleBefore = hasRole(role, e.msg.sender);
+
+	f(e, args);
+
+	assert hasRole(role, e.msg.sender) == hasRoleBefore,
+		"Should not have changed roles";
+}
+
+
+/// candidate rules ///
+
+
+//0xAzezSec
+rule updateCapacity(method f)filtered{f-> f.selector != sig:removeFacilitator(address).selector && f.selector !=sig:addFacilitator(address,string,uint128).selector}{
+    uint256 newFee;
+    env e; calldataarg args;
+	require inFacilitatorsList(toBytes32(e.msg.sender));
+
+    uint256 _capacity = GhoTokenHelper.getFacilitatorBucketCapacity(e.msg.sender);
+    f(e,args);
+    uint256 capacity_ = GhoTokenHelper.getFacilitatorBucketCapacity(e.msg.sender);
+
+    assert (_capacity != capacity_ => (f.selector == sig:setFacilitatorBucketCapacity(
+    address,
+    uint128 ).selector) ),"incorrect update for the capacity value ";
 }

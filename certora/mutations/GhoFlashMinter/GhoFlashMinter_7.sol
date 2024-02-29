@@ -74,7 +74,7 @@ contract GhoFlashMinter is IGhoFlashMinter {
     require(token == address(GHO_TOKEN), 'FlashMinter: Unsupported currency');
 
     uint256 fee = ACL_MANAGER.isFlashBorrower(msg.sender) ? 0 : _flashFee(amount);
-    // mutation: remove mint and burn, only transfer fee from caller
+    // mutation: remove mint, only transfer fee from caller
     // GHO_TOKEN.mint(address(receiver), amount);
 
     require(
@@ -83,6 +83,7 @@ contract GhoFlashMinter is IGhoFlashMinter {
     );
 
     GHO_TOKEN.transferFrom(address(receiver), address(this), fee);
+    // mutation: remove burn, only transfer fee from caller
     // GHO_TOKEN.burn(amount);
 
     emit FlashMint(address(receiver), msg.sender, address(GHO_TOKEN), amount, fee);

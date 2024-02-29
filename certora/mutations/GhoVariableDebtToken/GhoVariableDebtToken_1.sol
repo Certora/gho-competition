@@ -270,6 +270,7 @@ contract GhoVariableDebtToken is DebtTokenBase, ScaledBalanceTokenBase, IGhoVari
       return;
     }
 
+    // mutation: multiply by 2
     uint256 index = POOL.getReserveNormalizedVariableDebt(_underlyingAsset) * 2;
 
     uint256 balanceIncrease;
